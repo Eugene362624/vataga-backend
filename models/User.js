@@ -7,6 +7,8 @@ const userSchema = new Schema({
     userEmail: {type: String, unique: true, required: true},
     userPassword: {type: String, required: true},
     isPrivate: {type: Boolean, default: false},
+    bonusBalance: {type: Number, default: 0},
+    vatBalance: {type: Number, default: 0},
     university: {type: String, default: 'неизвестного вуза'},
     tags: {type: Array, default: "отсутствуют"},
     answers: {type: Array, default: "Пользователь еще не отвечал на вопросы"},

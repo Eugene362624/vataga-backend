@@ -89,7 +89,7 @@ const isAuth = (req, res, next) => {
   };
 
 app.get('/', isAuth, (req, res) => {
-    res.send('aaaaaaaaaaaaaaaa')
+    res.json('s')
 })
 
 app.post('/api/question/add', async(req, res) => {
@@ -112,9 +112,16 @@ app.post('/api/question/add', async(req, res) => {
     }
 })
 
+app.get('/api/users/:id', async (req, res) => {
+    const user = await User.findOne({index: req.params.id})
+    console.log(user)
+    res.send(user)
+})
+
 app.get('/api/question/:id', async(req, res) => {
     const question = await Question.findOne({_id: req.params.id})
-    question ? res.send(question) : res.status(404).send('Такого вопроса не существует')
+    console.log(question)
+    res.send(question)
 })
 
 app.post('/api/add-tag', async (req, res) => {
@@ -148,30 +155,139 @@ app.get('/api/questions', async(req, res) => {
     switch (req.query.sort) {
         case "1" : 
             // if (!req.query.page == false) {
-            questions = await Question.find({})
-            
-            .skip(10*((Number(req.query.page) <= 0 ? 0 : req.query.page - 1)))
-            .sort({timestamp: -1})
-            .limit(10)
+            questions = await Question
+            .aggregate([
+                {$sort: {timestamp: -1}},
+                {$skip: Number(10*((Number(req.query.page) <= 0 ? 0 : req.query.page - 1)))},
+                {$limit: 10},
+                {
+                    $project:{
+                        answers:{$size:"$answers"},
+                        title: "$title",
+                        subscribers: {$size:"$subscribers"},
+                        creator: "$creator",
+                        tags: "$tags",
+                        rate: "$rate",
+                        timestamp: "$timestamp",
+                        index: "$index"
+                } 
+            }])
+            // .find({})
+            // .skip(10*((Number(req.query.page) <= 0 ? 0 : req.query.page - 1)))
+            // .sort({timestamp: -1})
+            // .limit(10)
             console.log(Number(req.query.sort), Number(req.query.page))
             console.log('Выполнилась первая сортировка')
             // } else questions = await Question.find({}).sort({timestamp: 1}).limit(5)
 
             break
         case "2" : 
-            questions = await Question.find({})
-            .sort({timestamp: 1})
-            .skip(10*((Number(req.query.page) <= 0 ? 0 : req.query.page - 1)))
-            .limit(10)
+            questions = await Question
+            .aggregate([
+                {$sort: {timestamp: 1}},
+                {$skip: Number(10*((Number(req.query.page) <= 0 ? 0 : req.query.page - 1)))},
+                {$limit: 10},
+                {
+                    $project:{
+                        answers:{$size:"$answers"},
+                        title: "$title",
+                        subscribers: {$size:"$subscribers"},
+                        creator: "$creator",
+                        tags: "$tags",
+                        rate: "$rate",
+                        timestamp: "$timestamp",
+                        index: "$index"
+                } 
+            }])
+            // .find({})
+            // .sort({timestamp: 1})
+            // .skip(10*((Number(req.query.page) <= 0 ? 0 : req.query.page - 1)))
+            // .limit(10)
             console.log("Выполнилась вторая сортировка")
             break
-        // default: questions = await Question.find({})
+            case "3" : 
+            // if (!req.query.page == false) {
+            questions = await Question
+            .aggregate([
+                {$sort: {rate: -1}},
+                {$skip: Number(10*((Number(req.query.page) <= 0 ? 0 : req.query.page - 1)))},
+                {$limit: 10},
+                {
+                    $project:{
+                        answers:{$size:"$answers"},
+                        title: "$title",
+                        subscribers: {$size:"$subscribers"},
+                        creator: "$creator",
+                        tags: "$tags",
+                        rate: "$rate",
+                        timestamp: "$timestamp",
+                        index: "$index"
+                } 
+            }])
+            // .find({})
+            // .skip(10*((Number(req.query.page) <= 0 ? 0 : req.query.page - 1)))
+            // .sort({timestamp: -1})
+            // .limit(10)
+            console.log(Number(req.query.sort), Number(req.query.page))
+            console.log('Выполнилась первая сортировка')
+            // } else questions = await Question.find({}).sort({timestamp: 1}).limit(5)
+
+            break
+            case "4" : 
+            // if (!req.query.page == false) {
+            questions = await Question
+            .aggregate([
+                {$sort: {rate: 1}},
+                {$skip: Number(10*((Number(req.query.page) <= 0 ? 0 : req.query.page - 1)))},
+                {$limit: 10},
+                {
+                    $project:{
+                        answers:{$size:"$answers"},
+                        title: "$title",
+                        subscribers: {$size:"$subscribers"},
+                        creator: "$creator",
+                        tags: "$tags",
+                        rate: "$rate",
+                        timestamp: "$timestamp",
+                        index: "$index"
+                } 
+            }])
+            // .find({})
+            // .skip(10*((Number(req.query.page) <= 0 ? 0 : req.query.page - 1)))
+            // .sort({timestamp: -1})
+            // .limit(10)
+            console.log(Number(req.query.sort), Number(req.query.page))
+            console.log('Выполнилась первая сортировка')
+            // } else questions = await Question.find({}).sort({timestamp: 1}).limit(5)
+
+            break
+        default: 
+        // с помощью .aggregate вместо .find делаю возможным гибкий универсальный вывод
+        questions = await Question
+        .aggregate([
+            {$skip: Number(10*((Number(req.query.page) <= 0 ? 0 : req.query.page - 1)))},
+            {$limit: 10},
+            {
+                $project:{
+                    answers:{$size:"$answers"},
+                    title: "$title",
+                    subscribers: {$size:"$subscribers"},
+                    creator: "$creator",
+                    tags: "$tags",
+                    rate: "$rate",
+                    timestamp: "$timestamp",
+                    index: "$index"
+            } 
+        }])
+        // .find({})
         // .skip(10*((Number(req.query.page) <= 0 ? 0 : req.query.page - 1)))
         // .limit(10)
-        // console.log('!!!')
+        // .lean().select('-text -reports')
+        console.log('Сортировки нет')
         
-        // break
+        break
     }
+    console.log(questions)
     res.send({questions, count, tags})
 })
 
@@ -224,6 +340,7 @@ app.get("/login", isAuth, (req, res) => {
 })
 
 app.post('/login',   async (req, res) => {
+    console.log(req)
     const candidate = await User.findOne({userEmail: req.body.userEmail, userPassword: req.body.userPassword}).lean()
     if (candidate != null) {
         const userData = await User.findOne({ userEmail: req.body.userEmail }).lean()
