@@ -12,7 +12,7 @@ const dateformat = require('dateformat')
 
 const bodyParser = require('body-parser');
 
-app.use(cors({credentials: true, origin: 'https://vataga-frontend-2-lfe2b.ondigitalocean.app/'}))
+app.use(cors({credentials: true, origin: "*"}))
 
 app.use(cookieParser())
 app.use(bodyParser.json());
