@@ -33,14 +33,10 @@ async function main() {
     let transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: 'eugenemedvedevbelarus@gmail.com',
-            pass: 'Zhenyarulit1'
         }
     });
 
     let mailOpt = {
-        from: 'eugenemedvedevbelarus@gmail.com',
-        to: 'eugenemedvedevbelarus@gmail.com',
         subject: "Автоматическая рассылка vataga.by",
         html: `
             <div style="width: auto;
